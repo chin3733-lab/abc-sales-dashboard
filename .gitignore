@@ -33,6 +33,9 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# Supabase local temp files (contain project ref and connection info)
+supabase/.temp/
+
 # vercel
 .vercel
 
