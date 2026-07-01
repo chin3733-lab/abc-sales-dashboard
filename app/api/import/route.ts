@@ -27,6 +27,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'No data rows found in the file.' }, { status: 400 });
     }
 
+    const toNum = (v: unknown): number => { const n = Number(v ?? 0); return isNaN(n) ? 0 : n; };
+
     // Normalise column names: lowercase + trim
     const normalised: SaleRow[] = rows.map((raw) => {
       const r: Record<string, unknown> = {};
@@ -40,7 +42,6 @@ export async function POST(req: Request) {
       // Normalise date to YYYY-MM-DD
       let dateStr = String(r.date ?? '');
       if (/^\d{5}$/.test(dateStr)) {
-        // Excel serial date
         const d = new Date(Math.round((Number(dateStr) - 25569) * 86400 * 1000));
         dateStr = d.toISOString().slice(0, 10);
       } else if (dateStr.includes('T')) {
@@ -53,10 +54,10 @@ export async function POST(req: Request) {
         outlet: String(r.outlet ?? ''),
         product: String(r.product ?? ''),
         category: String(r.category ?? ''),
-        quantity: Number(r.quantity ?? 0),
-        unit_price: Number(r.unit_price ?? 0),
-        discount_pct: Number(r.discount_pct ?? 0),
-        amount: Number(r.amount ?? 0),
+        quantity: toNum(r.quantity),
+        unit_price: toNum(r.unit_price),
+        discount_pct: toNum(r.discount_pct),
+        amount: toNum(r.amount),
         payment_method: String(r.payment_method ?? ''),
       };
     });
